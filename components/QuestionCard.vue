@@ -31,7 +31,7 @@
 
 <script setup>
 import { ref, watch, toRefs } from 'vue';
-import OptionInput from './OptionInput.vue';
+import OptionInput from './OptionList.vue';
 import { nextTick } from 'vue';
 
 

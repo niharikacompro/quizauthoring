@@ -2,11 +2,7 @@
    <QuizCreator/>
   </template>
   
-  <script setup>
-import QuizCreator from '~/components/QuizCreator.vue';
-
-  
-  </script>
+ 
   <style>
  .app-container {
   min-height: 100vh;
