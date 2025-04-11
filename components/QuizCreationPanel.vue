@@ -20,10 +20,8 @@
             </div>
           </div>
         </div>
-        <div class="action-buttons">
-          <button @click="addQuestion" class="glass-button primary">Add Question</button>
-          <button @click="publishQuiz" class="glass-button success">Publish Quiz</button>
-        </div>
+       
+       
         <div v-for="(question, qIndex) in reactiveQuiz.questions" :key="qIndex" class="question-container glass-panel">
           <div class="question-header">
             <h3>Question {{ qIndex + 1 }}</h3>
@@ -32,17 +30,17 @@
           
           <div class="form-group">
             <label>Question Text</label>
-            <froala v-model:value="question.text" :config="froalaConfig" />
+            <froala v-model:value="question.text" :config="froalaConfig"   @froalaEditor.initialized="(editor) => { froalaInstances.value[qIndex] = editor }"  />
            
           </div>
           
           <div v-if="question.type === 'mcq'" class="options-section">
   <div v-for="(option, oIndex) in question.options" :key="oIndex" class="option-row">
     <input 
-      v-model="question.options[oIndex]" 
+      v-model="question.options[oIndex].label" 
       placeholder="Enter option" 
       class="glass-input small" 
-      label="option.label"
+     
     />
     <input 
     type="radio" 
@@ -62,6 +60,10 @@
     <input v-model="question.correctAnswer" placeholder="Enter Correct Answer" class="glass-input" />
   </div>
         </div>
+        <div class="action-buttons">
+          <button @click="addQuestion" class="glass-button primary">Add Question</button>
+          <button @click="publishQuiz" class="glass-button success">Publish Quiz</button>
+        </div>
         
        
         
@@ -69,10 +71,17 @@
       </div> 
 </template>
 <script setup>
-import { toRef } from 'vue';
+import { toRef ,nextTick,ref} from 'vue';
+import { useRouter } from 'nuxt/app';
+
+
+const router = useRouter(); // ✅ Nuxt router
+
 const props = defineProps({quiz:Object});
 const reactiveQuiz = toRef(() => props.quiz);
 const showQuestionTypeDialog = ref(false);
+const froalaInstances = ref([]);
+
 const selectQuestionType = (type) => {
   const newQuestion = {
     text: '',
@@ -89,8 +98,26 @@ const addQuestion = () => {
   console.log(showQuestionTypeDialog.value);
 };
 const publishQuiz = () => {
+    const quizToSave = {
+    ...reactiveQuiz.value,
+    id: 'quiz_' + Date.now(), // or use UUID here
+    createdAt: new Date().toISOString()
+  };
+
+  // Get existing quizzes from localStorage
+  const existingQuizzes = JSON.parse(localStorage.getItem('quizzes') || '[]');
+
+  // Push new quiz and save back to localStorage
+  existingQuizzes.push(quizToSave);
+  localStorage.setItem('quizzes', JSON.stringify(existingQuizzes));
+
+  // Optional alert
+  alert('Quiz published successfully!');
   console.log("Published Quiz:", reactiveQuiz.value);
+  console.log("publishedquiz", localStorage.getItem('quizzes'));
   alert("Quiz published successfully!");
+  router.push('/dashboard'); // change this to your actual dashboard route
+  
 };
 const removeQuestion = (qIndex) => {
   reactiveQuiz.value.questions.splice(qIndex, 1);
@@ -144,7 +171,7 @@ let optionIdCounter = 0; // you can also use UUIDs
 const addOption = (qIndex) => {
   reactiveQuiz.value.questions[qIndex].options.push({
     id: 'opt_' + optionIdCounter++,
-    label:'add option'
+    label:''
    
   });
 };
