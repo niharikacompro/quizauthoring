@@ -1,16 +1,21 @@
 <template>
   <div class="p-6">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h1 class="text-4xl font-bold text-gray-800"  style="font-family: 'Work Sans', Roboto, Helvetica, Arial, sans-serif;">Dashboard </h1>
-        <p class="text-sm text-gray-500">Your saved quizzes</p>
-       <NuxtLink to='/temp'>Create Quiz</NuxtLink>
+    <div class="flex items-center justify-between mb-8">
+      <div class="m-14-16-24-24" >
+        <h1
+  class="text-[36px] font-extrabold text-gray-900 tracking-tight leading-tight p-4 "
+  style="font-family: 'Work Sans', Roboto, Helvetica, Arial, sans-serif;"
+>
+  Dashboard
+</h1>
+       
+  <UiButton variant="glass"><NuxtLink to='/temp'>Create Quiz</NuxtLink></UiButton>
       </div>
 
       <!-- Navigation Arrows -->
       <div class="flex space-x-3">
-        <button
+        <UiButton
           @click="prev"
           :disabled="currentSlide === 0"
           :class="[
@@ -21,8 +26,8 @@
           ]"
         >
           <ChevronLeft class="w-5 h-5" />
-        </button>
-        <button
+        </UiButton>
+        <UiButton
           @click="next"
           :disabled="currentSlide === maxSlide"
           :class="[
@@ -33,7 +38,7 @@
           ]"
         >
           <ChevronRight class="w-5 h-5" />
-        </button>
+      </UiButton>
       </div>
     </div>
 
@@ -206,6 +211,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 .keen-slider__slide {
   min-width: 0;
 }

@@ -7,7 +7,12 @@
       </div>
       
       <div v-for="(question, qIndex) in reactiveQuiz.questions" :key="'preview-'+qIndex" class="preview-question">
-        <h4>Q{{ qIndex + 1 }}. <div v-html="question.text || 'Question text goes here'"></div></h4>
+        <div style="display: flex; flex-direction: row; gap: 8px">
+            <h4>Q{{ qIndex + 1 }}</h4>
+            <div v-html="question.text || 'Question text goes here'"></div>
+        </div>
+       
+        
         
         <div v-if="question.type === 'mcq'" class="preview-options">
           <div v-for="(option, oIndex) in question.options" :key="oIndex" class="preview-option">

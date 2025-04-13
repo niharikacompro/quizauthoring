@@ -7,9 +7,12 @@
         <p class="text-gray-600 mb-4">{{ quiz.description || 'No description provided' }}</p>
   
         <div v-for="(question, qIndex) in quiz.questions" :key="qIndex" class="mb-4">
+            <div style="display: flex; flex-direction: row;  gap:8px">
           <h4 class="font-medium">
-            Q{{ qIndex + 1 }}. <span v-html="question.text"></span>
+            Q{{ qIndex + 1 }}. 
           </h4>
+          <div v-html="question.text"></div>
+          </div>
           <div v-if="question.type === 'mcq'" class="ml-4 mt-2">
             <div
               v-for="(option, oIndex) in question.options"
