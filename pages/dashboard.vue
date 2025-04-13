@@ -1,7 +1,7 @@
 <template>
   <div class="p-6">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
+    <div >
       <div class="m-14-16-24-24" >
         <h1
   class="text-[36px] font-extrabold text-gray-900 tracking-tight leading-tight p-4 "
@@ -10,11 +10,15 @@
   Dashboard
 </h1>
        
-  <UiButton variant="glass"><NuxtLink to='/temp'>Create Quiz</NuxtLink></UiButton>
+  
       </div>
-
-      <!-- Navigation Arrows -->
-      <div class="flex space-x-3">
+      <div class="flex justify-end mr-8 p-4" >
+  <UiButton variant="glass" size="lg" class="mb-4" style="border: 1px solid black;">
+    <NuxtLink to="/temp">Create Quiz</NuxtLink>
+  </UiButton>
+</div>
+ <div style="background-color: rgb(241, 239, 238);" class="m-6 p-6">
+  <div class="flex space-x-3 justify-end mb-4">
         <UiButton
           @click="prev"
           :disabled="currentSlide === 0"
@@ -24,6 +28,7 @@
               ? 'opacity-40 cursor-not-allowed border-gray-200'
               : 'hover:bg-gray-100 border-gray-300'
           ]"
+          style="border: 1px solid black;"
         >
           <ChevronLeft class="w-5 h-5" />
         </UiButton>
@@ -36,14 +41,12 @@
               ? 'opacity-40 cursor-not-allowed border-gray-200'
               : 'hover:bg-gray-100 border-gray-300'
           ]"
+          style="border: 1px solid black;"
         >
           <ChevronRight class="w-5 h-5" />
       </UiButton>
       </div>
-    </div>
-
-    <!-- Slider -->
-    <div ref="sliderRef" class="keen-slider">
+      <div ref="sliderRef" class="keen-slider">
       <div
         v-for="(quiz, index) in quizzes"
         :key="quiz.id"
@@ -105,11 +108,15 @@
         </div>
       </div>
     </div>
-
-    <!-- No quizzes -->
     <div v-if="quizzes.length === 0" class="text-gray-500 mt-6 text-center">
       No quizzes found in localStorage.
     </div>
+ </div>
+      <!-- Navigation Arrows -->
+      
+    </div>
+
+   
   </div>
 </template>
 
