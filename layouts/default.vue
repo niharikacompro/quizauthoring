@@ -9,7 +9,7 @@
     <!-- Body: Sidebar and Content -->
     <div class="flex flex-1">
       <!-- Sidebar -->
-      <aside class="w-64 bg-gray-200 p-4">
+      <aside class="w-64  p-4" style="border: 1px solid black;">
         <nav>
           <ul class="space-y-2">
             <li>
