@@ -269,7 +269,7 @@ textarea.glass-input {
 .modal-close-button {
   position: absolute;
   top: 0.5rem;
-  right: 0.75rem;
+   right :0;
   background: transparent;
   border: none;
   font-size: 1.5rem;
