@@ -12,15 +12,22 @@
           <label>Quiz Description</label>
           <textarea v-model="reactiveQuiz.description" placeholder="Enter Quiz Description" class="glass-input"></textarea>
         </div>
-        <div v-if="showQuestionTypeDialog" class="modal-overlay">
-          <div class="modal-content glass-panel">
-            <h3>Select Question Type</h3>
-            <div class="type-options">
-              <UiButton @click="selectQuestionType('mcq')" class="glass-button">Multiple Choice</UiButton>
-              <UiButton @click="selectQuestionType('input')" class="glass-button">Text Input</UiButton>
-            </div>
-          </div>
-        </div>
+        <div v-if="showQuestionTypeDialog" class="modal-overlay" @click.self="closeQuestionTypeDialog">
+  <div class="modal-content glass-panel">
+    <!-- ❌ Close Button -->
+    <button class="modal-close-button" @click="closeQuestionTypeDialog">×</button>
+
+    <h3>Select Question Type</h3>
+    <div class="type-options">
+      <UiButton ref="mcqButtonRef" @click="selectQuestionType('mcq')" class="glass-button">
+        Multiple Choice
+      </UiButton>
+      <UiButton @click="selectQuestionType('input')" class="glass-button">
+        Text Input
+      </UiButton>
+    </div>
+  </div>
+</div>
        
        
         <div v-for="(question, qIndex) in reactiveQuiz.questions" :key="qIndex" class="question-container glass-panel">
@@ -76,6 +83,7 @@ import { toRef ,nextTick,ref} from 'vue';
 import { useRouter } from 'nuxt/app';
 import UiButton from './ui/Button.vue';
 import UiInput from './ui/Input.vue';
+const mcqButtonRef = ref(null);
 
 
 const router = useRouter(); // ✅ Nuxt router
@@ -84,6 +92,9 @@ const props = defineProps({quiz:Object});
 const reactiveQuiz = toRef(() => props.quiz);
 const showQuestionTypeDialog = ref(false);
 const froalaInstances = ref([]);
+const closeQuestionTypeDialog = () => {
+  showQuestionTypeDialog.value = false;
+};
 
 const selectQuestionType = (type) => {
   const newQuestion = {
@@ -95,10 +106,16 @@ const selectQuestionType = (type) => {
   reactiveQuiz.value.questions.push(newQuestion);
   showQuestionTypeDialog.value = false;
 };
+
 const addQuestion = () => {
-    
- showQuestionTypeDialog.value = true;
-  console.log(showQuestionTypeDialog.value);
+  showQuestionTypeDialog.value = true;
+  nextTick(() => {
+    if (mcqButtonRef.value?.$el) {
+      mcqButtonRef.value.$el.focus(); // For component with internal button
+    } else if (mcqButtonRef.value?.focus) {
+      mcqButtonRef.value.focus(); // In case it's a native element
+    }
+  });
 };
 
 const publishQuiz = () => {

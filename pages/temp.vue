@@ -266,6 +266,21 @@ textarea.glass-input {
   flex: 1;
   padding: 20px;
 }
+.modal-close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-close-button:hover {
+  color: #ff4444;
+}
 }
 </style>
   
