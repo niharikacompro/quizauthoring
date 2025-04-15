@@ -38,6 +38,7 @@
           
           <div class="form-group">
             <label>Question Text</label>
+        
             <froala v-model:value="question.text" :config="froalaConfig"   @froalaEditor.initialized="(editor) => handleFroalaInit(editor, qIndex)"
   />
            
@@ -51,25 +52,13 @@
       class="glass-input small" 
       variant="glass"
     />
-    <label
-  :for="'option_' + qIndex + '_' + oIndex"
-  class="radio-label"
->
-<input 
-  type="radio" 
-  :name="'correctAnswer_' + qIndex"
-  :value="option.id" 
-  v-model="question.correctAnswer"
-  class="radio-input"
-  tabindex="0"
-  @keydown.enter.prevent="selectOptionOnKey(question, option.id)"
-  @keydown.space.prevent="selectOptionOnKey(question, option.id)"
- 
-  :ref="`option-${qIndex}-${oIndex}`"
-/>
-  {{ option.text }}
-</label>
-
+    <input 
+    type="radio" 
+    :name="'correctAnswer_' + qIndex"
+    :value="option.id" 
+    v-model="question.correctAnswer"
+    class="radio-input"
+  />
     <button @click="removeOption(qIndex, oIndex)" class="glass-button danger small">×</button>
   </div>
   <button @click="addOption(qIndex)" class="glass-button secondary small">
@@ -103,11 +92,13 @@ const lastAddedQuestionIndex = ref(null);
 const questionRefs = ref([]);
 
 
+
 const router = useRouter(); // ✅ Nuxt router
 
 const props = defineProps({quiz:Object});
 const reactiveQuiz = toRef(() => props.quiz);
 const showQuestionTypeDialog = ref(false);
+
 
 const closeQuestionTypeDialog = () => {
   showQuestionTypeDialog.value = false;
@@ -130,37 +121,6 @@ const selectQuestionType = (type) => {
   pendingEditorFocus.value = newIndex; // Mark this index for focus
   showQuestionTypeDialog.value = false;
 };
-
-// Modify handleFroalaInit to use our new approach
-const handleFroalaInit = (editor, qIndex) => {
-  froalaInstances.value[qIndex] = editor;
-  
-  // Check if this is the editor we're waiting to focus
-  if (pendingEditorFocus.value === qIndex) {
-    // Try focusing with increasing delays to ensure the editor is ready
-    tryFocusEditor(editor, 5); // Try up to 5 times
-    pendingEditorFocus.value = null;
-  }
-};
-
-// Add this new function that will try multiple times to focus the editor
-const tryFocusEditor = (editor, attempts, delay = 200) => {
-  if (attempts <= 0) return;
-  
-  setTimeout(() => {
-    try {
-      editor.events.focus(true);
-      console.log('Editor focused successfully');
-    } catch (e) {
-      console.log(`Focus attempt failed, ${attempts-1} attempts remaining`);
-      tryFocusEditor(editor, attempts-1, delay * 1.5); // Exponential backoff
-    }
-  }, delay);
-};
-
-
-
-
 
 const addQuestion = () => {
   showQuestionTypeDialog.value = true;
@@ -288,13 +248,7 @@ const froalaConfig = {
 };
 let optionIdCounter = 0; // you can also use UUIDs
 
-const addOption = (qIndex) => {
-  reactiveQuiz.value.questions[qIndex].options.push({
-    id: 'opt_' + optionIdCounter++,
-    label:''
-   
-  });
-};
+
 
 const removeOption = (qIndex, oIndex) => {
   const question = reactiveQuiz.value.questions[qIndex];
@@ -322,6 +276,24 @@ const toggleCorrectAnswer = (qIndex, optionId) => {
   // For radio buttons, typically we don't allow unselect, so we'll just set it
   question.correctAnswer = optionId;
 };
+
+// Add this method to handle keyboard events
+const handleOptionKeyDown = (event, qIndex, option) => {
+  // Check if Space or Enter was pressed
+  if (event.key === ' ' || event.key === 'Enter') {
+    event.preventDefault(); // Prevent scrolling with space
+    toggleCorrectAnswer(qIndex, option.id);
+  }
+};
+const addOption = (qIndex) => {
+  reactiveQuiz.value.questions[qIndex].options.push({
+    id: 'opt_' + optionIdCounter++,
+    label:''
+   
+  });
+};
+
+
 
 // Add this method to handle keyboard events
 const selectOptionOnKey=(question, optionId) =>{
