@@ -38,7 +38,8 @@
           
           <div class="form-group">
             <label>Question Text</label>
-            <froala v-model:value="question.text" :config="froalaConfig"   @froalaEditor.initialized="(editor) => { froalaInstances.value[qIndex] = editor }"  />
+            <froala v-model:value="question.text" :config="froalaConfig"   @froalaEditor.initialized="(editor) => handleFroalaInit(editor, qIndex)"
+  />
            
           </div>
           
@@ -50,13 +51,25 @@
       class="glass-input small" 
       variant="glass"
     />
-    <input 
-    type="radio" 
-    :name="'correctAnswer_' + qIndex"
-    :value="option.id" 
-    v-model="question.correctAnswer"
-    class="radio-input"
-  />
+    <label
+  :for="'option_' + qIndex + '_' + oIndex"
+  class="radio-label"
+>
+<input 
+  type="radio" 
+  :name="'correctAnswer_' + qIndex"
+  :value="option.id" 
+  v-model="question.correctAnswer"
+  class="radio-input"
+  tabindex="0"
+  @keydown.enter.prevent="selectOptionOnKey(question, option.id)"
+  @keydown.space.prevent="selectOptionOnKey(question, option.id)"
+ 
+  :ref="`option-${qIndex}-${oIndex}`"
+/>
+  {{ option.text }}
+</label>
+
     <button @click="removeOption(qIndex, oIndex)" class="glass-button danger small">×</button>
   </div>
   <button @click="addOption(qIndex)" class="glass-button secondary small">
@@ -84,6 +97,10 @@ import { useRouter } from 'nuxt/app';
 import UiButton from './ui/Button.vue';
 import UiInput from './ui/Input.vue';
 const mcqButtonRef = ref(null);
+const nextQuestionIndexToFocus = ref(null);
+const froalaInstances = ref([]);
+const lastAddedQuestionIndex = ref(null);
+const questionRefs = ref([]);
 
 
 const router = useRouter(); // ✅ Nuxt router
@@ -91,21 +108,59 @@ const router = useRouter(); // ✅ Nuxt router
 const props = defineProps({quiz:Object});
 const reactiveQuiz = toRef(() => props.quiz);
 const showQuestionTypeDialog = ref(false);
-const froalaInstances = ref([]);
+
 const closeQuestionTypeDialog = () => {
   showQuestionTypeDialog.value = false;
 };
+
+
+// Add this variable to track when we need to focus a new editor
+const pendingEditorFocus = ref(null);
 
 const selectQuestionType = (type) => {
   const newQuestion = {
     text: '',
     type,
     options: type === 'mcq' ? [] : [],
-    correctAnswer: null, // for mcq: should be ID of the correct option
+    correctAnswer: null,
   };
+
   reactiveQuiz.value.questions.push(newQuestion);
+  const newIndex = reactiveQuiz.value.questions.length - 1;
+  pendingEditorFocus.value = newIndex; // Mark this index for focus
   showQuestionTypeDialog.value = false;
 };
+
+// Modify handleFroalaInit to use our new approach
+const handleFroalaInit = (editor, qIndex) => {
+  froalaInstances.value[qIndex] = editor;
+  
+  // Check if this is the editor we're waiting to focus
+  if (pendingEditorFocus.value === qIndex) {
+    // Try focusing with increasing delays to ensure the editor is ready
+    tryFocusEditor(editor, 5); // Try up to 5 times
+    pendingEditorFocus.value = null;
+  }
+};
+
+// Add this new function that will try multiple times to focus the editor
+const tryFocusEditor = (editor, attempts, delay = 200) => {
+  if (attempts <= 0) return;
+  
+  setTimeout(() => {
+    try {
+      editor.events.focus(true);
+      console.log('Editor focused successfully');
+    } catch (e) {
+      console.log(`Focus attempt failed, ${attempts-1} attempts remaining`);
+      tryFocusEditor(editor, attempts-1, delay * 1.5); // Exponential backoff
+    }
+  }, delay);
+};
+
+
+
+
 
 const addQuestion = () => {
   showQuestionTypeDialog.value = true;
@@ -253,4 +308,31 @@ const removeOption = (qIndex, oIndex) => {
   question.options.splice(oIndex, 1);
 };
 
+const scrollToNewQuestion = () => {
+  nextTick(() => {
+    const el = questionRefs.value[lastAddedQuestionIndex.value];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+};
+const toggleCorrectAnswer = (qIndex, optionId) => {
+  const question = reactiveQuiz.value.questions[qIndex];
+  // If already selected, you might want to unselect or leave it selected
+  // For radio buttons, typically we don't allow unselect, so we'll just set it
+  question.correctAnswer = optionId;
+};
+
+// Add this method to handle keyboard events
+const selectOptionOnKey=(question, optionId) =>{
+    question.correctAnswer = optionId;
+  };
+ const  focusNextOption=(event, qIndex, optionIndex)=> {
+    const nextRef = this.$refs[`option-${qIndex}-${optionIndex + 1}`];
+    if (nextRef && nextRef[0]) nextRef[0].focus();
+  };
+  const focusPrevOption=(event, qIndex, optionIndex)=> {
+    const prevRef = this.$refs[`option-${qIndex}-${optionIndex - 1}`];
+    if (prevRef && prevRef[0]) prevRef[0].focus();
+  };
 </script>
