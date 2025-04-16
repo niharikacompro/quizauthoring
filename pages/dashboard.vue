@@ -14,7 +14,7 @@
       </div>
       <div class="flex justify-end mr-8 p-4" >
   <UiButton variant="glass" size="lg" class="mb-4" style="border: 1px solid black;">
-    <NuxtLink to="/temp">Create Quiz</NuxtLink>
+    <NuxtLink to="/create-quiz">Create Quiz</NuxtLink>
   </UiButton>
 </div>
  <div style="background-color: rgb(241, 239, 238);" class="m-6 p-6">
@@ -66,7 +66,7 @@
             >
             <NuxtLink
   :to="{
-    path: '/temp',
+    path: '/create-quiz',
     query: {
       edit: 'true',
       id: quiz.id,
@@ -104,6 +104,7 @@
             >
               View
             </NuxtLink>
+          
           </div>
         </div>
       </div>
@@ -184,7 +185,7 @@ const loadQuizzes = () => {
 const editQuiz = (quiz) => {
   activeMenuIndex.value = null
   router.push({
-    path: '/temp',
+    path: '/create-quiz',
     query: {
       edit: 'true',
       id: quiz.id,
@@ -203,6 +204,7 @@ const deleteQuiz = (index) => {
     slider.value?.update()
   })
 }
+
 
 // Load on mount
 onMounted(async () => {

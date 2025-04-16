@@ -1,8 +1,6 @@
 <template>
    <div class="creation-panel">
         <h1 class="title">Create a Quiz</h1>
-        
-        
         <div class="form-group">
           <label>Quiz Title</label>
           <UiInput v-model="reactiveQuiz.title" placeholder="Enter Quiz Title" class="glass-input" variant="glass" />
@@ -39,32 +37,44 @@
           <div class="form-group">
             <label>Question Text</label>
         
-            <froala v-model:value="question.text" :config="froalaConfig"   @froalaEditor.initialized="(editor) => handleFroalaInit(editor, qIndex)"
-  />
+            <froala v-model:value="question.text" :config="froalaConfig"  :ref="'froala_' + qIndex"/>
            
           </div>
           
           <div v-if="question.type === 'mcq'" class="options-section">
-  <div v-for="(option, oIndex) in question.options" :key="oIndex" class="option-row">
-    <UiInput 
-      v-model="question.options[oIndex].label" 
-      placeholder="Enter option" 
-      class="glass-input small" 
+  <div
+    v-for="(option, oIndex) in question.options"
+    :key="oIndex"
+    class="option-row"
+  >
+    <UiInput
+      v-model="question.options[oIndex].label"
+      placeholder="Enter option"
+      class="glass-input small"
       variant="glass"
     />
-    <input 
-    type="radio" 
-    :name="'correctAnswer_' + qIndex"
-    :value="option.id" 
-    v-model="question.correctAnswer"
-    class="radio-input"
-  />
-    <button @click="removeOption(qIndex, oIndex)" class="glass-button danger small">×</button>
+    <input
+      type="radio"
+      :name="'correctAnswer_' + qIndex"
+      :value="option.id"
+      v-model="question.correctAnswer"
+      class="radio-input"
+      :tabindex="0"
+  
+  @keydown.enter="question.correctAnswer = option.id"
+    />
+    <button
+      @click="removeOption(qIndex, oIndex)"
+      class="glass-button danger small"
+    >
+      ×
+    </button>
   </div>
   <button @click="addOption(qIndex)" class="glass-button secondary small">
     Add Option
   </button>
 </div>
+
 <div v-if="question.type === 'input'" class="form-group">
     <label>Correct Answer</label>
     <input v-model="question.correctAnswer" placeholder="Enter Correct Answer" class="glass-input" />
@@ -86,26 +96,14 @@ import { useRouter } from 'nuxt/app';
 import UiButton from './ui/Button.vue';
 import UiInput from './ui/Input.vue';
 const mcqButtonRef = ref(null);
-const nextQuestionIndexToFocus = ref(null);
-const froalaInstances = ref([]);
-const lastAddedQuestionIndex = ref(null);
-const questionRefs = ref([]);
-
-
-
 const router = useRouter(); // ✅ Nuxt router
-
 const props = defineProps({quiz:Object});
 const reactiveQuiz = toRef(() => props.quiz);
 const showQuestionTypeDialog = ref(false);
-
-
 const closeQuestionTypeDialog = () => {
   showQuestionTypeDialog.value = false;
 };
 
-
-// Add this variable to track when we need to focus a new editor
 const pendingEditorFocus = ref(null);
 
 const selectQuestionType = (type) => {
@@ -118,9 +116,21 @@ const selectQuestionType = (type) => {
 
   reactiveQuiz.value.questions.push(newQuestion);
   const newIndex = reactiveQuiz.value.questions.length - 1;
-  pendingEditorFocus.value = newIndex; // Mark this index for focus
+  pendingEditorFocus.value = newIndex;
+  
+
   showQuestionTypeDialog.value = false;
+
+  nextTick(() => {
+    const froalaRef = 'froala_' + newIndex;
+    const froalaInstance = (Array.isArray($refs[froalaRef]) ? $refs[froalaRef][0] : $refs[froalaRef]);
+    
+    if (froalaInstance?.$el?.querySelector('.fr-element')) {
+      froalaInstance.$el.querySelector('.fr-element').focus();
+    }
+  });
 };
+
 
 const addQuestion = () => {
   showQuestionTypeDialog.value = true;
@@ -239,17 +249,16 @@ const froalaConfig = {
     },
     'contentChanged': function () {
       console.log('Content changed!');
+    },
+    initialized: function () {
+      // "this" refers to the editor instance
+      this.events.focus(); // Focus the editor
     }
   }
+ 
 }
-
-
-  
 };
-let optionIdCounter = 0; // you can also use UUIDs
-
-
-
+let optionIdCounter = 0; 
 const removeOption = (qIndex, oIndex) => {
   const question = reactiveQuiz.value.questions[qIndex];
   const removedOption = question.options[oIndex];
@@ -261,30 +270,6 @@ const removeOption = (qIndex, oIndex) => {
 
   question.options.splice(oIndex, 1);
 };
-
-const scrollToNewQuestion = () => {
-  nextTick(() => {
-    const el = questionRefs.value[lastAddedQuestionIndex.value];
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  });
-};
-const toggleCorrectAnswer = (qIndex, optionId) => {
-  const question = reactiveQuiz.value.questions[qIndex];
-  // If already selected, you might want to unselect or leave it selected
-  // For radio buttons, typically we don't allow unselect, so we'll just set it
-  question.correctAnswer = optionId;
-};
-
-// Add this method to handle keyboard events
-const handleOptionKeyDown = (event, qIndex, option) => {
-  // Check if Space or Enter was pressed
-  if (event.key === ' ' || event.key === 'Enter') {
-    event.preventDefault(); // Prevent scrolling with space
-    toggleCorrectAnswer(qIndex, option.id);
-  }
-};
 const addOption = (qIndex) => {
   reactiveQuiz.value.questions[qIndex].options.push({
     id: 'opt_' + optionIdCounter++,
@@ -292,19 +277,4 @@ const addOption = (qIndex) => {
    
   });
 };
-
-
-
-// Add this method to handle keyboard events
-const selectOptionOnKey=(question, optionId) =>{
-    question.correctAnswer = optionId;
-  };
- const  focusNextOption=(event, qIndex, optionIndex)=> {
-    const nextRef = this.$refs[`option-${qIndex}-${optionIndex + 1}`];
-    if (nextRef && nextRef[0]) nextRef[0].focus();
-  };
-  const focusPrevOption=(event, qIndex, optionIndex)=> {
-    const prevRef = this.$refs[`option-${qIndex}-${optionIndex - 1}`];
-    if (prevRef && prevRef[0]) prevRef[0].focus();
-  };
 </script>

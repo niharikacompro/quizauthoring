@@ -16,7 +16,7 @@
               <NuxtLink to="/dashboard" class="block text-gray-800 hover:text-gray-600">Dashboard</NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/temp" class="block text-gray-800 hover:text-gray-600">Quizzes</NuxtLink>
+              <NuxtLink to="/create-quiz" class="block text-gray-800 hover:text-gray-600">Create Quiz</NuxtLink>
             </li>
             <li>
             
