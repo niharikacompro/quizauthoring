@@ -13,9 +13,13 @@
         <div v-if="showQuestionTypeDialog" class="modal-overlay" @click.self="closeQuestionTypeDialog">
   <div class="modal-content glass-panel">
     <!-- ❌ Close Button -->
+   
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    
+  <h3>Select Question Type</h3>
     <button class="modal-close-button" @click="closeQuestionTypeDialog">×</button>
-
-    <h3>Select Question Type</h3>
+</div>
+   
     <div class="type-options">
       <UiButton ref="mcqButtonRef" @click="selectQuestionType('mcq')" class="glass-button">
         Multiple Choice
