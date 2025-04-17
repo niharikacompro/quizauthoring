@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   app: {
     head: {
-      title: 'FASTag B2B Platform',
+      title: 'Quiz App',
       meta: [{ name: 'description', content: 'B2B FASTag Management System' }]
     }
   },
