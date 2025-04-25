@@ -50,9 +50,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { toRef } from "vue";
+import type { Quiz } from '@/types/quiz';
 
-const props = defineProps({ quiz: Object });
-const reactiveQuiz = toRef(() => props.quiz);
+const props = defineProps<{ quiz: Quiz }>();
+const reactiveQuiz = toRef(props, 'quiz');
 </script>

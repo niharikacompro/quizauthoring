@@ -1,20 +1,21 @@
-export interface MCQOption {
-    id: string;
-    label: string;
-  }
-  
-  export interface Question {
-    text: string;
-    type: 'mcq' | 'input';
-    options: MCQOption[];
-    correctAnswer: string | null;
-  }
-  
-  export interface Quiz {
-    id?: string;
-    title: string;
-    description: string;
-    questions: Question[];
-    createdAt?: string;
-  }
-  
+export interface Option {
+  id: string;
+  label: string;
+}
+export type QuestionType = 'mcq' | 'input';
+
+export interface Question {
+  id: string;
+  text: string;
+  type: QuestionType;
+  options?: Option[];
+  correctAnswer?: string;
+}
+
+export interface Quiz {
+  id: string;
+  title: string;
+  description: string;
+  questions: Question[];
+ 
+}

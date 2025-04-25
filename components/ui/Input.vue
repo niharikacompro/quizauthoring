@@ -1,4 +1,5 @@
 <script setup>
+
 defineProps({
   modelValue: {
     type: [String, Number],
@@ -27,6 +28,11 @@ defineProps({
     validator: (value) => ['default', 'sm', 'lg'].includes(value)
   }
 })
+const innerInput = ref(null);
+
+defineExpose({
+  focus: () => innerInput.value?.focus()
+});
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -41,6 +47,8 @@ const handleInput = (event) => {
     :value="modelValue"
     :placeholder="placeholder"
     :disabled="disabled"
+    ref="innerInput"
+    v-bind="$attrs" 
     @input="handleInput"
     :class="[
       'flex w-full rounded-lg border bg-transparent px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors',

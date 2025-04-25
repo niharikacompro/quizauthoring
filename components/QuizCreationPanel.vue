@@ -31,7 +31,7 @@
       @click.self="closeQuestionTypeDialog"
     >
       <div class="modal-content glass-panel">
-        <!-- ❌ Close Button -->
+       
 
         <div
           style="
@@ -93,6 +93,7 @@
             placeholder="Enter option"
             class="glass-input small"
             variant="glass"
+          
           />
           <input
             type="radio"
@@ -134,28 +135,35 @@
     </div>
   </div>
 </template>
-<script setup>
-import { toRef, nextTick, ref } from "vue";
+<script setup lang="ts">
+import { toRef, nextTick, ref ,shallowRef} from "vue";
 import { useRouter } from "nuxt/app";
+import type { Quiz ,QuestionType} from '@/types/quiz';
 import UiButton from "./ui/Button.vue";
 import UiInput from "./ui/Input.vue";
-const mcqButtonRef = ref(null);
+const pendingEditorFocus = shallowRef<number | null>(null);
+const mcqButtonRef = shallowRef<HTMLElement | null>(null);
+const inputRefs = shallowRef<HTMLElement[]>([]);
+
 const router = useRouter(); // ✅ Nuxt router
-const props = defineProps({ quiz: Object });
-const reactiveQuiz = toRef(() => props.quiz);
-const showQuestionTypeDialog = ref(false);
+const props = defineProps<{ quiz: Quiz }>();
+const reactiveQuiz = toRef(props, 'quiz');
+
+//const showQuestionTypeDialog = ref(false);
+const showQuestionTypeDialog = shallowRef<boolean>(false);
 const closeQuestionTypeDialog = () => {
   showQuestionTypeDialog.value = false;
 };
 
-const pendingEditorFocus = ref(null);
 
-const selectQuestionType = (type) => {
+
+const selectQuestionType = (type:QuestionType) => {
   const newQuestion = {
+    id: "q_" + Date.now(),
     text: "",
-    type,
+    type:type,
     options: type === "mcq" ? [] : [],
-    correctAnswer: null,
+    correctAnswer: "",
   };
 
   reactiveQuiz.value.questions.push(newQuestion);
@@ -163,28 +171,16 @@ const selectQuestionType = (type) => {
   pendingEditorFocus.value = newIndex;
 
   showQuestionTypeDialog.value = false;
-
-  nextTick(() => {
-    const froalaRef = "froala_" + newIndex;
-    const froalaInstance = Array.isArray($refs[froalaRef])
-      ? $refs[froalaRef][0]
-      : $refs[froalaRef];
-
-    if (froalaInstance?.$el?.querySelector(".fr-element")) {
-      froalaInstance.$el.querySelector(".fr-element").focus();
-    }
-  });
 };
 
 const addQuestion = () => {
   showQuestionTypeDialog.value = true;
   nextTick(() => {
-    if (mcqButtonRef.value?.$el) {
-      mcqButtonRef.value.$el.focus(); // For component with internal button
-    } else if (mcqButtonRef.value?.focus) {
-      mcqButtonRef.value.focus(); // In case it's a native element
+    if (mcqButtonRef.value) {
+      mcqButtonRef.value.focus();
     }
   });
+  
 };
 
 const publishQuiz = () => {
@@ -253,7 +249,7 @@ const publishQuiz = () => {
   router.push("/dashboard");
 };
 
-const removeQuestion = (qIndex) => {
+const removeQuestion = (qIndex:number) => {
   reactiveQuiz.value.questions.splice(qIndex, 1);
 };
 const froalaConfig = {
@@ -314,7 +310,7 @@ const froalaConfig = {
   },
 };
 let optionIdCounter = 0;
-const removeOption = (qIndex, oIndex) => {
+const removeOption = (qIndex:number, oIndex:number) => {
   const question = reactiveQuiz.value.questions[qIndex];
   const removedOption = question.options[oIndex];
 
@@ -325,10 +321,15 @@ const removeOption = (qIndex, oIndex) => {
 
   question.options.splice(oIndex, 1);
 };
-const addOption = (qIndex) => {
+const addOption = (qIndex:number) => {
   reactiveQuiz.value.questions[qIndex].options.push({
     id: "opt_" + optionIdCounter++,
     label: "",
   });
+
+  nextTick(() => {
+    const lastIndex = reactiveQuiz.value.questions[qIndex].options.length - 1;
+    inputRefs.value[qIndex]?.[lastIndex]?.focus?.();
+  });
 };
-</script>
+</script>     
