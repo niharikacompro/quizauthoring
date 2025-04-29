@@ -19,14 +19,14 @@
 
       <div class="flex justify-center gap-4 mt-5">
         <UiButton
-          @click="() => selectType('mcq')"
+          @click="() => selectType(QuesType.MCQ)"
           ref="mcqButton"
           class="bg-white bg-opacity-70 border-none rounded-lg py-2.5 px-5 font-semibold cursor-pointer shadow-md transition-all duration-300 ease-in-out hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-sm"
         >
           Multiple Choice
         </UiButton>
         <UiButton
-          @click="() => selectType('input')"
+          @click="() => selectType(QuesType.INPUT)"
           class="bg-white bg-opacity-70 border-none rounded-lg py-2.5 px-5 font-semibold cursor-pointer shadow-md transition-all duration-300 ease-in-out hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-sm"
         >
           Text Input
@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from "vue";
 import { X } from "lucide-vue-next"; // or wherever your X icon is from
-import type { QuestionType } from "~/types/quiz";
+import { QuesType, type QuestionType } from "~/types/quiz";
 const mcqButton = ref<HTMLElement | null>(null);
 const props = defineProps({
   show: Boolean,

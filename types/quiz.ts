@@ -19,3 +19,7 @@ export interface Quiz {
   questions: Question[];
  
 }
+export enum QuesType {
+  MCQ = "mcq",
+  INPUT = "input",
+}
