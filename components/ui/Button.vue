@@ -1,4 +1,8 @@
 <script setup>
+const buttonRef = ref(null);
+defineExpose({
+  focus: () => buttonRef.value?.focus()
+});
 defineProps({
   variant: {
     type: String,

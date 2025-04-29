@@ -1,9 +1,9 @@
 <template>
-  <div class="preview-panel glass-panel">
-    <h2 class="preview-title">Quiz Preview</h2>
+  <div  class="bg-white bg-opacity-70 backdrop-blur-md rounded-2xl p-5 m-6 flex-1">
+    <h2 class="text-gray-800 border-b border-gray-300 pb-2 mb-5">Quiz Preview</h2>
     <div
       v-if="reactiveQuiz.title || reactiveQuiz.description"
-      class="quiz-info"
+    
     >
       <h3>{{ reactiveQuiz.title || "Untitled Quiz" }}</h3>
       <p>{{ reactiveQuiz.description || "No description provided" }}</p>
@@ -12,18 +12,18 @@
     <div
       v-for="(question, qIndex) in reactiveQuiz.questions"
       :key="'preview-' + qIndex"
-      class="preview-question"
+     class="mb-6 pb-4 border-b border-gray-100"
     >
-      <div style="display: flex; flex-direction: row; gap: 8px">
+      <div class="flex flex-row gap-2">
         <h4>Q{{ qIndex + 1 }}</h4>
         <div v-html="question.text || 'Question text goes here'"></div>
       </div>
 
-      <div v-if="question.type === 'mcq'" class="preview-options">
+      <div v-if="question.type === 'mcq'" class="flex flex-col gap-2.5">
         <div
           v-for="(option, oIndex) in question.options"
           :key="oIndex"
-          class="preview-option"
+         class="flex items-center gap-2.5"
         >
           <input
             type="radio"
@@ -37,14 +37,14 @@
           }}</label>
         </div>
       </div>
-      <div v-else class="preview-input">
-        <p class="correct-answer">
+      <div v-else >
+        <p >
           Correct Answer: {{ question.correctAnswer || "Not provided" }}
         </p>
       </div>
     </div>
 
-    <div v-if="reactiveQuiz.questions.length === 0" class="empty-preview">
+    <div v-if="reactiveQuiz.questions.length === 0" class="text-center text-gray-500 py-10">
       <p>Your questions will appear here</p>
     </div>
   </div>

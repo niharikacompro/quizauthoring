@@ -1,10 +1,8 @@
 <template>
-  <div class="app-container">
-    <div class="quiz-creator-container">
-      <QuizCreationPanel :quiz="quiz" />
-      <QuizPreviewPanel :quiz="quiz" />
-    </div>
-  </div>
+  <div class="min-h-screen bg-[#f5f5f5] p-5 font-[Segoe UI] font-sans flex max-w-[1400px] mx-auto gap-5">
+  <QuizCreationPanel :quiz="quiz" />
+  <QuizPreviewPanel :quiz="quiz" />
+</div>
 </template>
 
 <script setup lang="ts">

@@ -18,9 +18,9 @@
       </div>
       <div class="m-6 p-6 bg-customGray">
        
-        <div ref="sliderRef" >
+        <div  >
           <div
-            v-for="(quiz, index) in quizzes"
+            v-for="(quiz, id) in quizzes"
             :key="quiz.id"
             class=" px-2 relative"
           >
@@ -30,7 +30,7 @@
               <!-- 3-dot icon -->
               <div class="absolute top-3 right-3 z-20">
                 <button
-                  @click="toggleMenu(index)"
+                  @click="toggleMenu(quiz.id)"
                   class="text-gray-400 hover:text-gray-600"
                 >
                   <MoreVertical class="w-5 h-5" />
@@ -38,7 +38,7 @@
 
                 <!-- Dropdown -->
                 <div
-                  v-if="activeMenuIndex === index"
+                  v-if="activeMenuId === quiz.id"
                   class="absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow w-32 z-30"
                 >
                   <NuxtLink
@@ -49,17 +49,17 @@
                         id: quiz.id,
                         title: quiz.title,
                         description: quiz.description,
-                        questions: quiz.questions,
+                        questions:JSON.stringify(quiz.questions),
                       },
                     }"
                     class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                    @click="activeMenuIndex = null"
+                    @click="activeMenuId = null"
                   >
                     Edit Quiz
                   </NuxtLink>
                   <button
                     class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                    @click="deleteQuiz(index)"
+                    @click="deleteQuiz(quiz.id)"
                   >
                     Delete Quiz
                   </button>
@@ -95,46 +95,47 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, nextTick } from "vue";
-import { useRouter } from "vue-router";
-
-import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-vue-next";
-
-const quizzes = ref([]);
-const currentSlide = ref(0);
-const maxSlide = ref(0);
-const activeMenuIndex = ref(null);
-
-
-// Toggle 3-dot menu
-const toggleMenu = (index) => {
-  activeMenuIndex.value = activeMenuIndex.value === index ? null : index;
+<script setup lang="ts">
+import { ref, onMounted} from "vue";
+import {  MoreVertical } from "lucide-vue-next";
+import type { Quiz } from '@/types/quiz';
+const quizzes = ref<Quiz[]>([]);
+const activeMenuId = shallowRef<string | null>(null);
+const toggleMenu = (id:string) => {
+  activeMenuId.value = activeMenuId.value === id ? null : id;
+  console.log("active menu id ", activeMenuId.value);
 };
-
 // Load quizzes from localStorage
 const loadQuizzes = () => {
+  console.log("before",quizzes.value);
   const stored = localStorage.getItem("quizzes");
   if (stored) {
     try {
+
       quizzes.value = JSON.parse(stored);
+      console.log("after",quizzes.value)
+
     } catch (e) {
       console.error("Invalid JSON in localStorage.");
     }
   }
 };
 // Delete quiz
-const deleteQuiz = (index) => {
-  quizzes.value.splice(index, 1);
-  localStorage.setItem("quizzes", JSON.stringify(quizzes.value));
-  activeMenuIndex.value = null;
- 
+const deleteQuiz = (id: string) => {
+  const existingQuizzes = JSON.parse(localStorage.getItem("quizzes") || "[]");
+
+  const updatedQuizzes = existingQuizzes.filter((quiz: any) => quiz.id !== id);
+
+  localStorage.setItem("quizzes", JSON.stringify(updatedQuizzes));
+
+  quizzes.value = updatedQuizzes; // Update your reactive quizzes list
+  activeMenuId.value = null;
 };
 
 // Load on mount
 onMounted(async () => {
   loadQuizzes();
-  await nextTick();
+ 
  
 });
 </script>

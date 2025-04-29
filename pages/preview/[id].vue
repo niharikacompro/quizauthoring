@@ -1,17 +1,26 @@
-<script setup>
+<script setup lang="ts">
 import { useRoute } from "vue-router";
 import { ref, onMounted } from "vue";
-
+import type { Quiz } from '@/types/quiz'
 const route = useRoute();
-const quiz = ref(null);
+const quizId = route.params.id as string;
+
+// Reactive quiz object
+const quiz = ref<Quiz>({
+  id: '',
+  title: '',
+  description: '',
+  questions: [],
+});
+
 
 onMounted(() => {
   if (process.client) {
-    const id = route.params.id;
+  
     const stored = localStorage.getItem("quizzes");
-    if (stored && id) {
+    if (stored && quizId) {
       const allQuizzes = JSON.parse(stored);
-      quiz.value = allQuizzes.find((q) => q.id === id);
+      quiz.value = allQuizzes.find((q:Quiz) => q.id === quizId);
     }
   }
 });
