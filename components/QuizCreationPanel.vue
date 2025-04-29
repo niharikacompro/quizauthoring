@@ -13,7 +13,6 @@
         aria-label="Quiz Title"
       />
     </div>
-
     <div class="mb-5">
       <label for="quiz-description">Quiz Description</label>
       <textarea
@@ -24,46 +23,12 @@
         aria-label="Quiz Description"
       ></textarea>
     </div>
-
-    <div
-      v-if="showQuestionTypeDialog"
-     class="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]"
-      @click.self="closeQuestionTypeDialog"
-    >
-      <div class="bg-white/70 backdrop-blur-[10px] rounded-[15px] p-5 w-[400px] max-w-[90%]">
-       
-
-        <div
-         class="flex justify-between items-center"
-        >
-          <h3>Select Question Type</h3>
-          <button  class="px-2.5 py-1.5 text-xs font-semibold rounded-lg 
-         text-white bg-red-600 bg-opacity-70 
-         transition-all duration-300 ease-in-out 
-         shadow-[4px_4px_8px_rgba(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.7)] 
-         hover:-translate-y-0.5 
-         hover:shadow-[6px_6px_10px_rgba(163,177,198,0.7),-6px_-6px_10px_rgba(255,255,255,0.8)] 
-         active:translate-y-0 
-         active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),-2px_-2px_5px_rgba(255,255,255,0.7)]" @click="closeQuestionTypeDialog">
-            <X class="w-4 h-4" />
-
-          </button>
-        </div>
-
-        <div class="flex justify-center gap-4 mt-5">
-          <UiButton
-            ref="mcqButtonRef"
-            @click="selectQuestionType('mcq')"
-          class="bg-white bg-opacity-70 border-none rounded-lg py-2.5 px-5 font-semibold cursor-pointer shadow-md transition-all duration-300 ease-in-out hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-sm"
-          >
-            Multiple Choice
-          </UiButton>
-          <UiButton @click="selectQuestionType('input')" class="bg-white bg-opacity-70 border-none rounded-lg py-2.5 px-5 font-semibold cursor-pointer shadow-md transition-all duration-300 ease-in-out hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-sm">
-            Text Input
-          </UiButton>
-        </div>
-      </div>
-    </div>
+    <QuestionTypeModal
+    ref="questionTypeModalRef"
+    :show="showQuestionTypeDialog"
+    @close="closeQuestionTypeDialog"
+    @select="selectQuestionType"
+     />
     <div
       v-for="(question, qIndex) in reactiveQuiz.questions"
       :key="question.id"
@@ -177,6 +142,11 @@ import type { Quiz ,QuestionType} from '@/types/quiz';
 import UiButton from "./ui/Button.vue";
 import UiInput from "./ui/Input.vue";
 const mcqButtonRef = shallowRef<HTMLElement | null>(null);
+  type QuestionTypeModalExposed = {
+  mcqButton: HTMLElement | { $el: HTMLElement } | null
+}
+
+const questionTypeModalRef = ref<QuestionTypeModalExposed | null>(null)
 const router = useRouter(); 
 const props = defineProps<{ quiz: Quiz }>();
 const reactiveQuiz = toRef(props, 'quiz');
@@ -199,11 +169,12 @@ const selectQuestionType = (type:QuestionType) => {
 const addQuestion = () => {
   showQuestionTypeDialog.value = true;
   nextTick(() => {
-    if (mcqButtonRef.value?.$el) {
-      mcqButtonRef.value.$el.focus(); // For component with internal button
-    } else if (mcqButtonRef.value?.focus) {
-      mcqButtonRef.value.focus(); // In case it's a native element
-    }
+    const exposed = questionTypeModalRef.value
+    if (!exposed) return;
+
+    // Handle both native and component-wrapped elements
+    const mcqEl = (exposed.mcqButton as any)?.$el ?? exposed.mcqButton;
+    (mcqEl as HTMLElement | null)?.focus?.();
   });
 };
 const publishQuiz = () => {
@@ -394,7 +365,4 @@ const addOption = async(qId: string) => {
     input.focus();
   }
 };
-
-
-
 </script>     
