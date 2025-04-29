@@ -37,8 +37,16 @@
          class="flex justify-between items-center"
         >
           <h3>Select Question Type</h3>
-          <button class="absolute top-2 right-0 bg-transparent border-0 text-xl text-gray-600 cursor-pointer transition-colors duration-300 ease-in-out hover:text-red-500" @click="closeQuestionTypeDialog">
-            ×
+          <button  class="px-2.5 py-1.5 text-xs font-semibold rounded-lg 
+         text-white bg-red-600 bg-opacity-70 
+         transition-all duration-300 ease-in-out 
+         shadow-[4px_4px_8px_rgba(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.7)] 
+         hover:-translate-y-0.5 
+         hover:shadow-[6px_6px_10px_rgba(163,177,198,0.7),-6px_-6px_10px_rgba(255,255,255,0.8)] 
+         active:translate-y-0 
+         active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),-2px_-2px_5px_rgba(255,255,255,0.7)]" @click="closeQuestionTypeDialog">
+            <X class="w-4 h-4" />
+
           </button>
         </div>
 
@@ -74,7 +82,8 @@
          active:translate-y-0 
          active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),-2px_-2px_5px_rgba(255,255,255,0.7)]"
         >
-          Remove
+        <X class="w-4 h-4" />
+
         </button>
       </div>
 
@@ -124,7 +133,8 @@
          active:translate-y-0 
          active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),-2px_-2px_5px_rgba(255,255,255,0.7)]"
           >
-            ×
+          <X class="w-4 h-4" />
+
           </button>
         </div>
         <button @click="addOption(question.id)" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg 
@@ -161,6 +171,8 @@
 <script setup lang="ts">
 import { toRef, nextTick,shallowRef} from "vue";
 import { useRouter } from "nuxt/app";
+import { X } from 'lucide-vue-next';
+
 import type { Quiz ,QuestionType} from '@/types/quiz';
 import UiButton from "./ui/Button.vue";
 import UiInput from "./ui/Input.vue";
