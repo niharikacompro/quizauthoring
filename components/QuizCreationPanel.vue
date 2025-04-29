@@ -111,7 +111,7 @@ import { toRef, nextTick, shallowRef } from "vue";
 import { useRouter } from "nuxt/app";
 import { X } from "lucide-vue-next";
 
-import type { Quiz, QuestionType } from "@/types/quiz";
+import { type Quiz, type QuestionType, LocalStorageKeys } from "@/types/quiz";
 import UiButton from "./ui/Button.vue";
 import UiInput from "./ui/Input.vue";
 const mcqButtonRef = shallowRef<HTMLElement | null>(null);
@@ -201,7 +201,7 @@ const publishQuiz = () => {
     }
   }
 
-  const existingQuizzes = JSON.parse(localStorage.getItem("quizzes") || "[]");
+  const existingQuizzes = JSON.parse(localStorage.getItem(LocalStorageKeys.QUIZZES) || "[]");
 
   // If editing, update; if creating, create new
   if (reactiveQuiz.value.id) {
@@ -229,7 +229,7 @@ const publishQuiz = () => {
     existingQuizzes.push(newQuiz);
   }
 
-  localStorage.setItem("quizzes", JSON.stringify(existingQuizzes));
+  localStorage.setItem(LocalStorageKeys.QUIZZES, JSON.stringify(existingQuizzes));
 
   alert("Quiz published successfully!");
   router.push("/dashboard");

@@ -63,7 +63,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { Quiz } from "@/types/quiz";
+import { LocalStorageKeys, type Quiz } from "@/types/quiz";
 import { MoreVertical } from "lucide-vue-next";
 const emit = defineEmits<{
   (e: "update:quizzes", updated: Quiz[]): void;
@@ -72,14 +72,14 @@ const props = defineProps<{ quizzes: Quiz[] }>();
 const activeMenuId = shallowRef<string | null>(null);
 const toggleMenu = (id: string) => {
   activeMenuId.value = activeMenuId.value === id ? null : id;
-  console.log("active menu id ", activeMenuId.value);
+ 
 };
 const deleteQuiz = (id: string) => {
-  const existingQuizzes = JSON.parse(localStorage.getItem("quizzes") || "[]");
+  const existingQuizzes = JSON.parse(localStorage.getItem(LocalStorageKeys.QUIZZES) || "[]");
 
   const updatedQuizzes = existingQuizzes.filter((quiz: any) => quiz.id !== id);
 
-  localStorage.setItem("quizzes", JSON.stringify(updatedQuizzes));
+  localStorage.setItem(LocalStorageKeys.QUIZZES, JSON.stringify(updatedQuizzes));
 
   emit("update:quizzes", updatedQuizzes); // ✅ notify parent
   activeMenuId.value = null;

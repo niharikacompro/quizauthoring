@@ -29,21 +29,19 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted} from "vue";
-import type { Quiz } from '@/types/quiz';
+import { LocalStorageKeys, type Quiz } from '@/types/quiz';
 const quizzes = ref<Quiz[]>([]);
 // Load quizzes from localStorage
 const loadQuizzes = () => {
-  console.log("before",quizzes.value);
-  const stored = localStorage.getItem("quizzes");
+  const stored = localStorage.getItem(LocalStorageKeys.QUIZZES);
   if (stored) {
     try {
-
       quizzes.value = JSON.parse(stored);
-      console.log("after",quizzes.value)
-
     } catch (e) {
-      console.error("Invalid JSON in localStorage.");
+      console.error("Error parsing quizzes from localStorage", e);
+      
     }
+
   }
 };
 // Load on mount

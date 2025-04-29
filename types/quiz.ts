@@ -23,3 +23,7 @@ export enum QuesType {
   MCQ = "mcq",
   INPUT = "input",
 }
+
+export enum LocalStorageKeys {
+  QUIZZES = "quizzes",
+}
