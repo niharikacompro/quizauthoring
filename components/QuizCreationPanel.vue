@@ -56,7 +56,6 @@
         </div>
       </div>
     </div>
-
     <div
       v-for="(question, qIndex) in reactiveQuiz.questions"
       :key="question.id"

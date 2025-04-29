@@ -9,10 +9,8 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'nuxt/app';
 import type { Quiz } from '@/types/quiz';
-// Route
 const route = useRoute();
 const quizId = route.query.id as string;
-
 // Reactive quiz object
 const quiz = ref<Quiz>({
   id: '',
