@@ -1,13 +1,13 @@
 <template>
   <div class="flex-1 p-5 m-6">
     <h1 class="mb-5">Create a Quiz</h1>
-    <div class=" mb-5">
+    <div class="mb-5">
       <label for="quiz-title">Quiz Title</label>
       <UiInput
         v-model="reactiveQuiz.title"
         id="quiz-title"
         name="quiz-title"
-        class="w-full px-[15px] py-[12px] rounded-[8px] bg-white/70 border-none focus:outline-none transition-all duration-300"
+        class="w-full px-[15px] py-[12px] rounded-[8px] bg-white/70 border-none"
         variant="glass"
         placeholder="Enter quiz title"
         aria-label="Quiz Title"
@@ -18,147 +18,120 @@
       <textarea
         v-model="reactiveQuiz.description"
         id="quiz-description"
-        class="w-full px-[15px] py-[12px] rounded-[8px] bg-white/70 border-none focus:outline-none transition-all duration-300"   
+        class="w-full px-[15px] py-[12px] rounded-[8px] bg-white/70 border-none"
         placeholder="Enter quiz description"
         aria-label="Quiz Description"
       ></textarea>
     </div>
     <QuestionTypeModal
-    ref="questionTypeModalRef"
-    :show="showQuestionTypeDialog"
-    @close="closeQuestionTypeDialog"
-    @select="selectQuestionType"
-     />
+      ref="questionTypeModalRef"
+      :show="showQuestionTypeDialog"
+      @close="closeQuestionTypeDialog"
+      @select="selectQuestionType"
+    />
     <div
       v-for="(question, qIndex) in reactiveQuiz.questions"
       :key="question.id"
-     class="mb-5 bg-white bg-opacity-70 backdrop-blur-lg rounded-xl p-5"
+      class="mb-5 bg-white bg-opacity-70 backdrop-blur-lg rounded-xl p-5"
     >
       <div class="flex justify-between items-center mb-4">
         <h3>Question {{ qIndex + 1 }}</h3>
         <button
           @click="removeQuestion(question.id)"
-          class="px-2.5 py-1.5 text-xs font-semibold rounded-lg 
-         text-white bg-red-600 bg-opacity-70 
-         transition-all duration-300 ease-in-out 
-         shadow-[4px_4px_8px_rgba(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.7)] 
-         hover:-translate-y-0.5 
-         hover:shadow-[6px_6px_10px_rgba(163,177,198,0.7),-6px_-6px_10px_rgba(255,255,255,0.8)] 
-         active:translate-y-0 
-         active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),-2px_-2px_5px_rgba(255,255,255,0.7)]"
+          class="px-2.5 py-1.5 text-xs font-semibold rounded-lg text-white bg-red-600 bg-opacity-70"
         >
-        <X class="w-4 h-4" />
-
+          <X class="w-4 h-4" />
         </button>
       </div>
 
       <div class="mb-5">
         <label>Question Text</label>
-
         <froala v-model:value="question.text" :config="froalaConfig" />
       </div>
-
       <div v-if="question.type === 'mcq'" class="mt-4">
         <div
           v-for="(option, oIndex) in question.options"
           :key="option.id"
-         class="flex items-center gap-2.5 mb-2.5"
+          class="flex items-center gap-2.5 mb-2.5"
         >
-
           <UiInput
-           :id="'option-' + option.id"
-          
-             v-model="question.options[oIndex].label"
+            :id="'option-' + option.id"
+            v-model="question.options[oIndex].label"
             placeholder="Enter option"
-            class="bg-white bg-opacity-70 border-0 rounded-lg p-3 w-full 
-         shadow-inner shadow-[inset_3px_3px_5px_rgba(163,177,198,0.3),inset_-3px_-3px_5px_rgba(255,255,255,0.8)] 
-         transition-all duration-300 ease-in-out focus:outline-none 
-         focus:shadow-[inset_5px_5px_8px_rgba(163,177,198,0.4),inset_-5px_-5px_8px_rgba(255,255,255,0.9)] 
-         p-1.5 text-xs"
-            variant="glass"
-          
+            class="bg-white bg-opacity-70 border-0 rounded-lg p-3 w-full p-1.5"
           />
           <input
             type="radio"
             :name="'correctAnswer_' + qIndex"
             :value="option.id"
             v-model="question.correctAnswer"
-           class="ml-2.5"
+            class="ml-2.5"
             :tabindex="0"
             @keydown.enter="question.correctAnswer = option.id"
           />
           <button
             @click="removeOption(qIndex, oIndex)"
-            class="px-2.5 py-1.5 text-xs font-semibold rounded-lg 
-         text-white bg-red-600 bg-opacity-70 
-         transition-all duration-300 ease-in-out 
-         shadow-[4px_4px_8px_rgba(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.7)] 
-         hover:-translate-y-0.5 
-         hover:shadow-[6px_6px_10px_rgba(163,177,198,0.7),-6px_-6px_10px_rgba(255,255,255,0.8)] 
-         active:translate-y-0 
-         active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),-2px_-2px_5px_rgba(255,255,255,0.7)]"
+            class="px-2.5 py-1.5 text-xs font-semibold rounded-lg text-white bg-red-600 bg-opacity-70"
           >
-          <X class="w-4 h-4" />
-
+            <X class="w-4 h-4" />
           </button>
         </div>
-        <button @click="addOption(question.id)" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg 
-         text-white bg-gray-600 bg-opacity-70 
-         transition-all duration-300 ease-in-out 
-         shadow-[4px_4px_8px_rgba(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.7)] 
-         hover:-translate-y-0.5 
-         hover:shadow-[6px_6px_10px_rgba(163,177,198,0.7),-6px_-6px_10px_rgba(255,255,255,0.8)] 
-         active:translate-y-0 
-         active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),-2px_-2px_5px_rgba(255,255,255,0.7)]">
+        <button
+          @click="addOption(question.id)"
+          class="px-2.5 py-1.5 text-xs font-semibold rounded-lg text-white bg-gray-600 bg-opacity-70"
+        >
           Add Option
         </button>
       </div>
-
       <div v-if="question.type === 'input'" class="mb-5">
         <label>Correct Answer</label>
         <input
           v-model="question.correctAnswer"
           placeholder="Enter Correct Answer"
-         class="bg-white bg-opacity-70 border-none rounded-lg p-3.5 w-full shadow-inner shadow-[inset_3px_3px_5px_rgba(163,177,198,0.3),inset_-3px_-3px_5px_rgba(255,255,255,0.8)] transition-all duration-300 focus:outline-none focus:shadow-[inset_5px_5px_8px_rgba(163,177,198,0.4),inset_-5px_-5px_8px_rgba(255,255,255,0.9)]"
+          class="bg-white bg-opacity-70 border-none rounded-lg p-3.5 w-full"
         />
       </div>
     </div>
     <div class="flex gap-5 m-5">
-      <UiButton @click="addQuestion" class="border-0 rounded-lg px-5 py-2.5 font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-[4px_4px_8px_rgba(163,177,198,0.6),_-4px_-4px_8px_rgba(255,255,255,0.7)] bg-[#3473b7] text-white hover:translate-y-[-2px] hover:shadow-[6px_6px_10px_rgba(163,177,198,0.7),_-6px_-6px_10px_rgba(255,255,255,0.8)] active:translate-y-0 active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),_-2px_-2px_5px_rgba(255,255,255,0.7)]"
+      <UiButton
+        @click="addQuestion"
+        class="border-0 rounded-lg px-5 py-2.5 font-semibold cursor-pointer bg-[#3473b7] text-white"
         >Add Question</UiButton
       >
-      <UiButton @click="publishQuiz" class="border-0 rounded-lg px-5 py-2.5 font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-[4px_4px_8px_rgba(163,177,198,0.6),_-4px_-4px_8px_rgba(255,255,255,0.7)] bg-[#248748] text-white hover:translate-y-[-2px] hover:shadow-[6px_6px_10px_rgba(163,177,198,0.7),_-6px_-6px_10px_rgba(255,255,255,0.8)] active:translate-y-0 active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),_-2px_-2px_5px_rgba(255,255,255,0.7)]"
+      <UiButton
+        @click="publishQuiz"
+        class="border-0 rounded-lg px-5 py-2.5 font-semibold cursor-pointer bg-[#248748] text-white"
         >Publish Quiz</UiButton
       >
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { toRef, nextTick,shallowRef} from "vue";
+import { toRef, nextTick, shallowRef } from "vue";
 import { useRouter } from "nuxt/app";
-import { X } from 'lucide-vue-next';
+import { X } from "lucide-vue-next";
 
-import type { Quiz ,QuestionType} from '@/types/quiz';
+import type { Quiz, QuestionType } from "@/types/quiz";
 import UiButton from "./ui/Button.vue";
 import UiInput from "./ui/Input.vue";
 const mcqButtonRef = shallowRef<HTMLElement | null>(null);
-  type QuestionTypeModalExposed = {
-  mcqButton: HTMLElement | { $el: HTMLElement } | null
-}
+type QuestionTypeModalExposed = {
+  mcqButton: HTMLElement | { $el: HTMLElement } | null;
+};
 
-const questionTypeModalRef = ref<QuestionTypeModalExposed | null>(null)
-const router = useRouter(); 
+const questionTypeModalRef = ref<QuestionTypeModalExposed | null>(null);
+const router = useRouter();
 const props = defineProps<{ quiz: Quiz }>();
-const reactiveQuiz = toRef(props, 'quiz');
+const reactiveQuiz = toRef(props, "quiz");
 const showQuestionTypeDialog = shallowRef<boolean>(false);
 const closeQuestionTypeDialog = () => {
   showQuestionTypeDialog.value = false;
 };
-const selectQuestionType = (type:QuestionType) => {
+const selectQuestionType = (type: QuestionType) => {
   const newQuestion = {
     id: "q_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
     text: "",
-    type:type,
+    type: type,
     options: type === "mcq" ? [] : [],
     correctAnswer: "",
   };
@@ -169,7 +142,7 @@ const selectQuestionType = (type:QuestionType) => {
 const addQuestion = () => {
   showQuestionTypeDialog.value = true;
   nextTick(() => {
-    const exposed = questionTypeModalRef.value
+    const exposed = questionTypeModalRef.value;
     if (!exposed) return;
 
     // Handle both native and component-wrapped elements
@@ -230,37 +203,41 @@ const publishQuiz = () => {
 
   const existingQuizzes = JSON.parse(localStorage.getItem("quizzes") || "[]");
 
-// If editing, update; if creating, create new
-if (reactiveQuiz.value.id) {
-  // Editing existing quiz
-  const quizIndex = existingQuizzes.findIndex((q:Quiz) => q.id === reactiveQuiz.value.id);
+  // If editing, update; if creating, create new
+  if (reactiveQuiz.value.id) {
+    // Editing existing quiz
+    const quizIndex = existingQuizzes.findIndex(
+      (q: Quiz) => q.id === reactiveQuiz.value.id
+    );
 
-  if (quizIndex !== -1) {
-    existingQuizzes[quizIndex] = {
-      ...reactiveQuiz.value,
-      updatedAt: new Date().toISOString(), // optional: add updatedAt field
-    };
+    if (quizIndex !== -1) {
+      existingQuizzes[quizIndex] = {
+        ...reactiveQuiz.value,
+        updatedAt: new Date().toISOString(), // optional: add updatedAt field
+      };
+    } else {
+      alert("Quiz not found to update!");
+      return;
+    }
   } else {
-    alert("Quiz not found to update!");
-    return;
+    // Creating a new quiz
+    const newQuiz = {
+      ...reactiveQuiz.value,
+      id: "quiz_" + Date.now(),
+      createdAt: new Date().toISOString(),
+    };
+    existingQuizzes.push(newQuiz);
   }
-} else {
-  // Creating a new quiz
-  const newQuiz = {
-    ...reactiveQuiz.value,
-    id: "quiz_" + Date.now(),
-    createdAt: new Date().toISOString(),
-  };
-  existingQuizzes.push(newQuiz);
-}
 
-localStorage.setItem("quizzes", JSON.stringify(existingQuizzes));
+  localStorage.setItem("quizzes", JSON.stringify(existingQuizzes));
 
-alert("Quiz published successfully!");
-router.push("/dashboard");
+  alert("Quiz published successfully!");
+  router.push("/dashboard");
 };
 const removeQuestion = (qId: string) => {
-  const qIndex = reactiveQuiz.value.questions.findIndex((question) => question.id === qId);
+  const qIndex = reactiveQuiz.value.questions.findIndex(
+    (question) => question.id === qId
+  );
 
   if (qIndex !== -1) {
     // Found the question, now remove it
@@ -327,7 +304,7 @@ const froalaConfig = {
   },
 };
 let optionIdCounter = 0;
-const removeOption = (qIndex:number, oIndex:number) => {
+const removeOption = (qIndex: number, oIndex: number) => {
   const question = reactiveQuiz.value.questions[qIndex];
   const removedOption = question.options[oIndex];
 
@@ -338,16 +315,16 @@ const removeOption = (qIndex:number, oIndex:number) => {
 
   question.options.splice(oIndex, 1);
 };
-const addOption = async(qId: string) => {
-  const question = reactiveQuiz.value.questions.find(q => q.id === qId);
+const addOption = async (qId: string) => {
+  const question = reactiveQuiz.value.questions.find((q) => q.id === qId);
 
   if (!question) {
-    alert('Question not found.');
+    alert("Question not found.");
     return;
   }
 
-  if (question.type !== 'mcq') {
-    alert('Can only add options to MCQ type questions.');
+  if (question.type !== "mcq") {
+    alert("Can only add options to MCQ type questions.");
     return;
   }
 
@@ -360,9 +337,11 @@ const addOption = async(qId: string) => {
   question.options = [...(question.options || []), newOption];
   await nextTick();
 
-  const input = document.getElementById(`option-${newOption.id}`) as HTMLInputElement;
+  const input = document.getElementById(
+    `option-${newOption.id}`
+  ) as HTMLInputElement;
   if (input) {
     input.focus();
   }
 };
-</script>     
+</script>
