@@ -36,6 +36,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { X } from 'lucide-vue-next'
 const mcqButton = shallowRef<HTMLElement | null>(null);
 const props = defineProps({
   show: Boolean,
