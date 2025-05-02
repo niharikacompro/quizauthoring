@@ -28,10 +28,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted} from "vue";
-import { LocalStorageKeys, type Quiz } from '@/types/quiz';
 const quizzes = ref<Quiz[]>([]);
-// Load quizzes from localStorage
 const loadQuizzes = () => {
   const stored = localStorage.getItem(LocalStorageKeys.QUIZZES);
   if (stored) {

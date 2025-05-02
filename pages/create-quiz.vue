@@ -6,12 +6,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'nuxt/app';
-import { LocalStorageKeys, type Quiz } from '@/types/quiz';
 const route = useRoute();
 const quizId = route.query.id as string;
-// Reactive quiz object
 const quiz = ref<Quiz>({
   id: '',
   title: '',

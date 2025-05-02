@@ -3,6 +3,9 @@ export interface Option {
   label: string;
 }
 export type QuestionType = 'mcq' | 'input';
+export type QuestionTypeModalExposed = {
+  mcqButton: HTMLElement | { $el: HTMLElement } | null;
+}; 
 
 export interface Question {
   id: string;

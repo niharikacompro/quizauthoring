@@ -2,15 +2,15 @@
   <div  class="bg-white bg-opacity-70 backdrop-blur-md rounded-2xl p-5 m-6 flex-1">
     <h2 class="text-gray-800 border-b border-gray-300 pb-2 mb-5">Quiz Preview</h2>
     <div
-      v-if="reactiveQuiz.title || reactiveQuiz.description"
+      v-if="QuizData.title || QuizData.description"
     
     >
-      <h3>{{ reactiveQuiz.title || "Untitled Quiz" }}</h3>
-      <p>{{ reactiveQuiz.description || "No description provided" }}</p>
+      <h3>{{ QuizData.title || "Untitled Quiz" }}</h3>
+      <p>{{ QuizData.description || "No description provided" }}</p>
     </div>
 
     <div
-      v-for="(question, qIndex) in reactiveQuiz.questions"
+      v-for="(question, qIndex) in QuizData.questions"
       :key="'preview-' + qIndex"
      class="mb-6 pb-4 border-b border-gray-100"
     >
@@ -44,16 +44,13 @@
       </div>
     </div>
 
-    <div v-if="reactiveQuiz.questions.length === 0" class="text-center text-gray-500 py-10">
+    <div v-if="QuizData.questions.length === 0" class="text-center text-gray-500 py-10">
       <p>Your questions will appear here</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { toRef } from "vue";
-import type { Quiz } from '@/types/quiz';
-
 const props = defineProps<{ quiz: Quiz }>();
-const reactiveQuiz = toRef(props, 'quiz');
+const QuizData = toRef(props, 'quiz');
 </script>

@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Quiz App',
-      meta: [{ name: 'description', content: 'B2B FASTag Management System' }]
+      meta: [{ name: 'description', content: 'Quiz Authoring App' }]
     }
   },
   css: ['@/assets/styles/main.css'],

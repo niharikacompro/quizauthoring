@@ -9,12 +9,12 @@
     >
       <div class="flex justify-between items-center">
         <h3>Select Question Type</h3>
-        <button
-          class="px-2.5 py-1.5 text-xs font-semibold rounded-lg text-white bg-red-600 bg-opacity-70 transition-all duration-300 ease-in-out shadow-[4px_4px_8px_rgba(163,177,198,0.6),-4px_-4px_8px_rgba(255,255,255,0.7)] hover:-translate-y-0.5 hover:shadow-[6px_6px_10px_rgba(163,177,198,0.7),-6px_-6px_10px_rgba(255,255,255,0.8)] active:translate-y-0 active:shadow-[2px_2px_5px_rgba(163,177,198,0.6),-2px_-2px_5px_rgba(255,255,255,0.7)]"
+        <UiButton
+          class="px-2.5 py-1.5 text-xs font-semibold rounded-lg text-white-600 bg-red-600 bg-opacity-70 "
           @click="onClose"
         >
-          <X class="w-4 h-4" />
-        </button>
+          <X class="w-4 h-4 text-white" />
+        </UiButton>
       </div>
 
       <div class="flex justify-center gap-4 mt-5">
@@ -36,10 +36,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-import { X } from "lucide-vue-next"; // or wherever your X icon is from
-import { QuesType, type QuestionType } from "~/types/quiz";
-const mcqButton = ref<HTMLElement | null>(null);
+const mcqButton = shallowRef<HTMLElement | null>(null);
 const props = defineProps({
   show: Boolean,
 });

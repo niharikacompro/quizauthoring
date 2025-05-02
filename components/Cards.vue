@@ -63,13 +63,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { LocalStorageKeys, type Quiz } from "@/types/quiz";
-import { MoreVertical } from "lucide-vue-next";
+const props = defineProps<{ quizzes: Quiz[] }>();
+import {MoreVertical} from "lucide-vue-next";
+const activeMenuId = shallowRef<string | null>(null);
 const emit = defineEmits<{
   (e: "update:quizzes", updated: Quiz[]): void;
 }>();
-const props = defineProps<{ quizzes: Quiz[] }>();
-const activeMenuId = shallowRef<string | null>(null);
 const toggleMenu = (id: string) => {
   activeMenuId.value = activeMenuId.value === id ? null : id;
  

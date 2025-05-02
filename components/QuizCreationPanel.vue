@@ -4,7 +4,7 @@
     <div class="mb-5">
       <label for="quiz-title">Quiz Title</label>
       <UiInput
-        v-model="reactiveQuiz.title"
+        v-model="QuizData.title"
         id="quiz-title"
         name="quiz-title"
         class="w-full px-[15px] py-[12px] rounded-[8px] bg-white/70 border-none"
@@ -16,7 +16,7 @@
     <div class="mb-5">
       <label for="quiz-description">Quiz Description</label>
       <textarea
-        v-model="reactiveQuiz.description"
+        v-model="QuizData.description"
         id="quiz-description"
         class="w-full px-[15px] py-[12px] rounded-[8px] bg-white/70 border-none"
         placeholder="Enter quiz description"
@@ -30,7 +30,7 @@
       @select="selectQuestionType"
     />
     <div
-      v-for="(question, qIndex) in reactiveQuiz.questions"
+      v-for="(question, qIndex) in QuizData.questions"
       :key="question.id"
       class="mb-5 bg-white bg-opacity-70 backdrop-blur-lg rounded-xl p-5"
     >
@@ -59,7 +59,7 @@
             v-model="question.options[oIndex].label"
             placeholder="Enter option"
             class="bg-white bg-opacity-70 border-0 rounded-lg p-3 w-full p-1.5"
-          />
+            :ref="el => setOptionRef(el, option.id)"        />
           <input
             type="radio"
             :name="'correctAnswer_' + qIndex"
@@ -107,23 +107,18 @@
   </div>
 </template>
 <script setup lang="ts">
-import { toRef, nextTick, shallowRef } from "vue";
-import { useRouter } from "nuxt/app";
-import { X } from "lucide-vue-next";
-
-import { type Quiz, type QuestionType, LocalStorageKeys } from "@/types/quiz";
-import UiButton from "./ui/Button.vue";
-import UiInput from "./ui/Input.vue";
-const mcqButtonRef = shallowRef<HTMLElement | null>(null);
-type QuestionTypeModalExposed = {
-  mcqButton: HTMLElement | { $el: HTMLElement } | null;
-};
-
+import { X } from 'lucide-vue-next'
 const questionTypeModalRef = ref<QuestionTypeModalExposed | null>(null);
 const router = useRouter();
 const props = defineProps<{ quiz: Quiz }>();
-const reactiveQuiz = toRef(props, "quiz");
+const QuizData = toRef(props, "quiz") ;
 const showQuestionTypeDialog = shallowRef<boolean>(false);
+const optionRefs = shallowRef<Record<string, HTMLInputElement | null>>({})
+const setOptionRef = (el: HTMLInputElement | null, optionId: string) => {
+  if (el) {
+    optionRefs.value[optionId] = el
+  }
+}
 const closeQuestionTypeDialog = () => {
   showQuestionTypeDialog.value = false;
 };
@@ -136,7 +131,7 @@ const selectQuestionType = (type: QuestionType) => {
     correctAnswer: "",
   };
 
-  reactiveQuiz.value.questions.push(newQuestion);
+  QuizData.value.questions.push(newQuestion);
   showQuestionTypeDialog.value = false;
 };
 const addQuestion = () => {
@@ -152,22 +147,22 @@ const addQuestion = () => {
 };
 const publishQuiz = () => {
   // Basic validations
-  if (!reactiveQuiz.value.title.trim()) {
+  if (!QuizData.value.title.trim()) {
     alert("Quiz title is required.");
     return;
   }
 
-  if (!reactiveQuiz.value.description.trim()) {
+  if (!QuizData.value.description.trim()) {
     alert("Quiz description is required.");
     return;
   }
 
-  if (!reactiveQuiz.value.questions.length) {
+  if (!QuizData.value.questions.length) {
     alert("Please add at least one question.");
     return;
   }
 
-  for (const [index, question] of reactiveQuiz.value.questions.entries()) {
+  for (const [index, question] of QuizData.value.questions.entries()) {
     const qNum = index + 1;
 
     if (!question.text || !question.text.trim()) {
@@ -204,15 +199,15 @@ const publishQuiz = () => {
   const existingQuizzes = JSON.parse(localStorage.getItem(LocalStorageKeys.QUIZZES) || "[]");
 
   // If editing, update; if creating, create new
-  if (reactiveQuiz.value.id) {
+  if (QuizData.value.id) {
     // Editing existing quiz
     const quizIndex = existingQuizzes.findIndex(
-      (q: Quiz) => q.id === reactiveQuiz.value.id
+      (q: Quiz) => q.id === QuizData.value.id
     );
 
     if (quizIndex !== -1) {
       existingQuizzes[quizIndex] = {
-        ...reactiveQuiz.value,
+        ...QuizData.value,
         updatedAt: new Date().toISOString(), // optional: add updatedAt field
       };
     } else {
@@ -222,7 +217,7 @@ const publishQuiz = () => {
   } else {
     // Creating a new quiz
     const newQuiz = {
-      ...reactiveQuiz.value,
+      ...QuizData.value,
       id: "quiz_" + Date.now(),
       createdAt: new Date().toISOString(),
     };
@@ -235,13 +230,13 @@ const publishQuiz = () => {
   router.push("/dashboard");
 };
 const removeQuestion = (qId: string) => {
-  const qIndex = reactiveQuiz.value.questions.findIndex(
+  const qIndex = QuizData.value.questions.findIndex(
     (question) => question.id === qId
   );
 
   if (qIndex !== -1) {
     // Found the question, now remove it
-    reactiveQuiz.value.questions.splice(qIndex, 1);
+    QuizData.value.questions.splice(qIndex, 1);
   } else {
     alert("Question not found.");
   }
@@ -305,7 +300,7 @@ const froalaConfig = {
 };
 let optionIdCounter = 0;
 const removeOption = (qIndex: number, oIndex: number) => {
-  const question = reactiveQuiz.value.questions[qIndex];
+  const question = QuizData.value.questions[qIndex];
   const removedOption = question.options[oIndex];
 
   // ✅ If removed option was the correct answer, reset correctAnswer
@@ -316,7 +311,7 @@ const removeOption = (qIndex: number, oIndex: number) => {
   question.options.splice(oIndex, 1);
 };
 const addOption = async (qId: string) => {
-  const question = reactiveQuiz.value.questions.find((q) => q.id === qId);
+  const question = QuizData.value.questions.find((q) => q.id === qId);
 
   if (!question) {
     alert("Question not found.");
@@ -327,6 +322,7 @@ const addOption = async (qId: string) => {
     alert("Can only add options to MCQ type questions.");
     return;
   }
+   
 
   const newOption = {
     id: "opt_" + optionIdCounter++,
@@ -337,11 +333,12 @@ const addOption = async (qId: string) => {
   question.options = [...(question.options || []), newOption];
   await nextTick();
 
-  const input = document.getElementById(
+ /* const input = document.getElementById(
     `option-${newOption.id}`
-  ) as HTMLInputElement;
+  ) as HTMLInputElement;*/
+  const input = optionRefs.value[newOption.id];
   if (input) {
-    input.focus();
+    input.focus()
   }
 };
 </script>
