@@ -59,7 +59,8 @@
             v-model="question.options[oIndex].label"
             placeholder="Enter option"
             class="bg-white bg-opacity-70 border-0 rounded-lg p-3 w-full p-1.5"
-            :ref="el => setOptionRef(el, option.id)"        />
+            :ref="(el) => setOptionRef(el, option.id)"
+          />
           <input
             type="radio"
             :name="'correctAnswer_' + qIndex"
@@ -107,18 +108,18 @@
   </div>
 </template>
 <script setup lang="ts">
-import { X } from 'lucide-vue-next'
+import { X } from "lucide-vue-next";
 const questionTypeModalRef = ref<QuestionTypeModalExposed | null>(null);
 const router = useRouter();
 const props = defineProps<{ quiz: Quiz }>();
-const QuizData = toRef(props, "quiz") ;
+const QuizData = toRef(props, "quiz");
 const showQuestionTypeDialog = shallowRef<boolean>(false);
-const optionRefs = shallowRef<Record<string, HTMLInputElement | null>>({})
+const optionRefs = shallowRef<Record<string, HTMLInputElement | null>>({});
 const setOptionRef = (el: HTMLInputElement | null, optionId: string) => {
   if (el) {
-    optionRefs.value[optionId] = el
+    optionRefs.value[optionId] = el;
   }
-}
+};
 const closeQuestionTypeDialog = () => {
   showQuestionTypeDialog.value = false;
 };
@@ -196,7 +197,9 @@ const publishQuiz = () => {
     }
   }
 
-  const existingQuizzes = JSON.parse(localStorage.getItem(LocalStorageKeys.QUIZZES) || "[]");
+  const existingQuizzes = JSON.parse(
+    localStorage.getItem(LocalStorageKeys.QUIZZES) || "[]"
+  );
 
   // If editing, update; if creating, create new
   if (QuizData.value.id) {
@@ -224,7 +227,10 @@ const publishQuiz = () => {
     existingQuizzes.push(newQuiz);
   }
 
-  localStorage.setItem(LocalStorageKeys.QUIZZES, JSON.stringify(existingQuizzes));
+  localStorage.setItem(
+    LocalStorageKeys.QUIZZES,
+    JSON.stringify(existingQuizzes)
+  );
 
   alert("Quiz published successfully!");
   router.push("/dashboard");
@@ -322,7 +328,6 @@ const addOption = async (qId: string) => {
     alert("Can only add options to MCQ type questions.");
     return;
   }
-   
 
   const newOption = {
     id: "opt_" + optionIdCounter++,
@@ -333,12 +338,12 @@ const addOption = async (qId: string) => {
   question.options = [...(question.options || []), newOption];
   await nextTick();
 
- /* const input = document.getElementById(
+  /* const input = document.getElementById(
     `option-${newOption.id}`
   ) as HTMLInputElement;*/
   const input = optionRefs.value[newOption.id];
   if (input) {
-    input.focus()
+    input.focus();
   }
 };
 </script>

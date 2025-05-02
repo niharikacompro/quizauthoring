@@ -3,17 +3,17 @@ const route = useRoute();
 const quizId = route.params.id as string;
 
 const quiz = ref<Quiz>({
-  id: '',
-  title: '',
-  description: '',
+  id: "",
+  title: "",
+  description: "",
   questions: [],
 });
 onMounted(() => {
-    const stored = localStorage.getItem("quizzes");
-    if (stored && quizId) {
-      const allQuizzes = JSON.parse(stored);
-      quiz.value = allQuizzes.find((q:Quiz) => q.id === quizId);
-    }
+  const stored = localStorage.getItem("quizzes");
+  if (stored && quizId) {
+    const allQuizzes = JSON.parse(stored);
+    quiz.value = allQuizzes.find((q: Quiz) => q.id === quizId);
+  }
 });
 </script>
 <template>

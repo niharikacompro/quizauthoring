@@ -41,11 +41,11 @@
 </template>
 
 <script setup>
-import { useHead } from '#imports'
+import { useHead } from "#imports";
 
 useHead({
   htmlAttrs: {
-    lang: 'en',
+    lang: "en",
   },
-})
+});
 </script>

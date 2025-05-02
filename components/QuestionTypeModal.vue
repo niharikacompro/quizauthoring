@@ -10,7 +10,7 @@
       <div class="flex justify-between items-center">
         <h3>Select Question Type</h3>
         <UiButton
-          class="px-2.5 py-1.5 text-xs font-semibold rounded-lg text-white-600 bg-red-600 bg-opacity-70 "
+          class="px-2.5 py-1.5 text-xs font-semibold rounded-lg text-white-600 bg-red-600 bg-opacity-70"
           @click="onClose"
         >
           <X class="w-4 h-4 text-white" />
@@ -36,7 +36,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { X } from 'lucide-vue-next'
+import { X } from "lucide-vue-next";
 const mcqButton = shallowRef<HTMLElement | null>(null);
 const props = defineProps({
   show: Boolean,

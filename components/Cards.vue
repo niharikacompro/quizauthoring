@@ -64,21 +64,25 @@
 </template>
 <script setup lang="ts">
 const props = defineProps<{ quizzes: Quiz[] }>();
-import {MoreVertical} from "lucide-vue-next";
+import { MoreVertical } from "lucide-vue-next";
 const activeMenuId = shallowRef<string | null>(null);
 const emit = defineEmits<{
   (e: "update:quizzes", updated: Quiz[]): void;
 }>();
 const toggleMenu = (id: string) => {
   activeMenuId.value = activeMenuId.value === id ? null : id;
- 
 };
 const deleteQuiz = (id: string) => {
-  const existingQuizzes = JSON.parse(localStorage.getItem(LocalStorageKeys.QUIZZES) || "[]");
+  const existingQuizzes = JSON.parse(
+    localStorage.getItem(LocalStorageKeys.QUIZZES) || "[]"
+  );
 
   const updatedQuizzes = existingQuizzes.filter((quiz: any) => quiz.id !== id);
 
-  localStorage.setItem(LocalStorageKeys.QUIZZES, JSON.stringify(updatedQuizzes));
+  localStorage.setItem(
+    LocalStorageKeys.QUIZZES,
+    JSON.stringify(updatedQuizzes)
+  );
 
   emit("update:quizzes", updatedQuizzes); // ✅ notify parent
   activeMenuId.value = null;

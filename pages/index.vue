@@ -1,5 +1,5 @@
 <script setup>
 definePageMeta({
-  redirect: '/dashboard'
-})
+  redirect: "/dashboard",
+});
 </script>
